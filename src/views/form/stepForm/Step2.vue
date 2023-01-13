@@ -3,27 +3,20 @@
     <a-form :form="form" style="max-width: 500px; margin: 40px auto 0;">
       <a-alert
         :closable="true"
-        message="确认转账后，资金将直接打入对方账户，无法退回。"
+        message="确认后，工单将进行派发，无法直接退回。"
         style="margin-bottom: 24px;"
       />
+
       <a-form-item
-        label="付款账户"
+        label="报修人电话"
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
         class="stepFormText"
       >
-        ant-design@alipay.com
+        13020535093
       </a-form-item>
       <a-form-item
-        label="收款账户"
-        :labelCol="labelCol"
-        :wrapperCol="wrapperCol"
-        class="stepFormText"
-      >
-        test@example.com
-      </a-form-item>
-      <a-form-item
-        label="收款人姓名"
+        label="报修人姓名"
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
         class="stepFormText"
@@ -31,24 +24,55 @@
         Alex
       </a-form-item>
       <a-form-item
-        label="转账金额"
+        label="报修地址"
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
         class="stepFormText"
       >
-        ￥ 5,000.00
+        A楼 A101办公室
       </a-form-item>
-      <a-divider />
       <a-form-item
-        label="支付密码"
+        label="问题描述"
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
         class="stepFormText"
       >
-        <a-input
+        电脑死机，需要重装系统
+      </a-form-item>
+      <a-form-item
+        label="问题描述"
+        :labelCol="labelCol"
+        :wrapperCol="wrapperCol"
+        class="stepFormText"
+      >
+        电脑死机，需要重装系统
+      </a-form-item>
+      <a-form-item
+        label=""
+        :labelCol="labelCol"
+        :wrapperCol="wrapperCol"
+        class="stepFormText"
+      >
+      <a-divider />
+      <div>
+        <span style="display: block;text-align: center;">手机扫码上传或点击图片二维码直接上传附件</span>
+      <a :href="codeUrl" style="display:block; margin: 0 auto;">
+        <!-- <img alt="example" style="width: 80%; display: block; margin: 0 auto;" src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png" /> -->
+        <vue-qr
+              style="width: 80%; display: block; margin: 0 auto;"
+              :correctLevel="3"
+              :autoColor="false"
+              colorDark="#000000"
+              :text="codeUrl"
+              :size="95"
+              :margin="0"
+            ></vue-qr>
+      </a>
+      </div>
+        <!-- <a-input
           type="password"
           style="width: 80%;"
-          v-decorator="['paymentPassword', { initialValue: '123456', rules: [{required: true, message: '请输入支付密码'}] }]" />
+          v-decorator="['paymentPassword', { initialValue: '123456', rules: [{required: true, message: '请输入支付密码'}] }]" /> -->
       </a-form-item>
       <a-form-item :wrapperCol="{span: 19, offset: 5}">
         <a-button :loading="loading" type="primary" @click="nextStep">提交</a-button>
@@ -59,6 +83,8 @@
 </template>
 
 <script>
+import VueQr from 'vue-qr'
+import { v4 } from 'uuid'
 export default {
   name: 'Step2',
   data () {
@@ -67,9 +93,20 @@ export default {
       wrapperCol: { lg: { span: 19 }, sm: { span: 19 } },
       form: this.$form.createForm(this),
       loading: false,
-      timer: 0
+      timer: 0,
+      keyId: '',
+      codeUrl: ''
     }
   },
+  created () {
+    this.keyId = v4()
+    console.log(this.keyId)
+    this.codeUrl = 'http://124.221.110.184/upload.php?keyId=' + this.keyId
+    console.log(this.codeUrl)
+  },
+  // computed () {
+  //   this.codeUrl = 'http://124.221.110.184/up.php?keyId=' + this.keyId
+  // },
   methods: {
     nextStep () {
       const that = this
@@ -93,6 +130,9 @@ export default {
   },
   beforeDestroy () {
     clearTimeout(this.timer)
+  },
+  components: {
+    VueQr
   }
 }
 </script>

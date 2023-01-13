@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-form :form="form" style="max-width: 500px; margin: 40px auto 0;">
-      <a-form-item
+      <!-- <a-form-item
         label="付款账户"
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
@@ -11,9 +11,9 @@
           v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
           <a-select-option value="1">ant-design@alipay.com</a-select-option>
         </a-select>
-      </a-form-item>
+      </a-form-item> -->
       <a-form-item
-        label="收款账户"
+        label="维修地址"
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
       >
@@ -22,29 +22,39 @@
           :compact="true"
         >
           <a-select defaultValue="alipay" style="width: 100px">
-            <a-select-option value="alipay">支付宝</a-select-option>
-            <a-select-option value="wexinpay">微信</a-select-option>
+            <a-select-option value="alipay">A楼</a-select-option>
+            <a-select-option value="wexinpay">B楼</a-select-option>
           </a-select>
           <a-input
             :style="{width: 'calc(100% - 100px)'}"
-            v-decorator="['payType', { initialValue: 'test@example.com', rules: [{required: true, message: '收款账户必须填写'}]}]"
+            v-decorator="['payType', { initialValue: 'A101办公室', rules: [{required: true, message: '收款账户必须填写'}]}]"
           />
         </a-input-group>
       </a-form-item>
       <a-form-item
-        label="收款人姓名"
+        label="期望维修时间"
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
       >
-        <a-input v-decorator="['name', { initialValue: 'Alex', rules: [{required: true, message: '收款人名称必须核对'}] }]"/>
+      <a-select
+    mode="multiple"
+    placeholder="Inserted are removed"
+    :value="selectedItems"
+    style="width: 100%"
+    @change="handleChange"
+  >
+    <a-select-option v-for="item in filteredOptions" :key="item" :value="item">
+      {{ item }}
+    </a-select-option>
+  </a-select>
       </a-form-item>
       <a-form-item
-        label="转账金额"
+        label="问题描述"
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
       >
-        <a-input prefix="￥" v-decorator="['momey', { initialValue: '5000', rules: [{required: true, message: '转账金额必须填写'}] }]"/>
-      </a-form-item>
+      <a-textarea  placeholder="请仔细描述您遇到的问题" :rows="4" />
+    </a-form-item>
       <a-form-item :wrapperCol="{span: 19, offset: 5}">
         <a-button type="primary" @click="nextStep">下一步</a-button>
       </a-form-item>
@@ -52,22 +62,29 @@
     <a-divider />
     <div class="step-form-style-desc">
       <h3>说明</h3>
-      <h4>转账到支付宝账户</h4>
+      <h4>请尽量详细描述问题</h4>
       <p>如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。</p>
-      <h4>转账到银行卡</h4>
+      <h4>请尽量详细描述问题</h4>
       <p>如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。</p>
     </div>
   </div>
 </template>
 
 <script>
+const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 export default {
   name: 'Step1',
   data () {
     return {
       labelCol: { lg: { span: 5 }, sm: { span: 5 } },
       wrapperCol: { lg: { span: 19 }, sm: { span: 19 } },
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
+      selectedItems: []
+    }
+  },
+  computed: {
+    filteredOptions () {
+      return OPTIONS.filter(o => !this.selectedItems.includes(o))
     }
   },
   methods: {
@@ -79,6 +96,9 @@ export default {
           this.$emit('nextStep')
         }
       })
+    },
+    handleChange (selectedItems) {
+      this.selectedItems = selectedItems
     }
   }
 }
