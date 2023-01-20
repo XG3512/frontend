@@ -25,6 +25,7 @@ const userApi = {
  * @returns {*}
  */
 export function login (parameter) {
+  console.log('login url', userApi.Login)
   return request({
     url: userApi.Login,
     method: 'post',

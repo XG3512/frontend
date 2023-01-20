@@ -22,7 +22,17 @@ export default new Vuex.Store({
     user,
     permission
   },
-  state: {},
+  state: {
+    userName: 'Alex',
+    userPhone: '10086',
+    formStepFormAdress: '',
+    formStepFormTime: '',
+    formStepFormDescription: '777',
+    formStepFormImage: '',
+    formStepTimeItems: [],
+    keyId: '',
+    user: ''
+  },
   mutations: {},
   actions: {},
   getters
