@@ -49,7 +49,7 @@ export const asyncRouterMap = [
 
       },
 
-      // // result
+      // result
       // {
       //   path: '/result',
       //   name: 'result',
@@ -71,6 +71,27 @@ export const asyncRouterMap = [
       //     }
       //   ]
       // },
+      {
+        path: '/Admin',
+        name: 'admin',
+        component: RouteView,
+        redirect: '/Admin/User',
+        meta: { title: 'menu.admin', icon: 'check-circle-o', permission: ['order'] },
+        children: [
+          {
+            path: '/Admin/User',
+            name: 'AdminUser',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/Admin/User/TableList'),
+            meta: { title: 'menu.admin.user', keepAlive: false, hiddenHeaderContent: true, permission: ['order'] }
+          },
+          {
+            path: '/Admin/Order',
+            name: 'AdminOrder',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/Admin/Order'),
+            meta: { title: 'menu.admin.order', keepAlive: false, hiddenHeaderContent: true, permission: ['order'] }
+          }
+        ]
+      },
 
       // // Exception
       // {

@@ -14,7 +14,7 @@ function resolve (dir) {
 function getGitHash () {
   try {
     return GitRevision.version()
-  } catch (e) {}
+  } catch (e) { }
   return 'unknown'
 }
 // eslint-disable-next-line no-unused-vars
@@ -63,36 +63,36 @@ const vueConfig = {
     config.resolve.alias.set('@$', resolve('src'))
 
     // fixed svg-loader by https://github.com/damianstasik/vue-svg-loader/issues/185#issuecomment-1126721069
-		const svgRule = config.module.rule('svg')
-		// Remove regular svg config from root rules list
-		config.module.rules.delete('svg')
+    const svgRule = config.module.rule('svg')
+    // Remove regular svg config from root rules list
+    config.module.rules.delete('svg')
 
-		config.module.rule('svg')
-			// Use svg component rule
-			.oneOf('svg_as_component')
-				.resourceQuery(/inline/)
-				.test(/\.(svg)(\?.*)?$/)
-				.use('babel-loader')
-					.loader('babel-loader')
-					.end()
-				.use('vue-svg-loader')
-					.loader('vue-svg-loader')
-					.options({
-						svgo: {
-							plugins: [
-								{ prefixIds: true },
-								{ cleanupIDs: true },
-								{ convertShapeToPath: false },
-								{ convertStyleToAttrs: true }
-							]
-						}
-					})
-					.end()
-				.end()
-			// Otherwise use original svg rule
-			.oneOf('svg_as_regular')
-				.merge(svgRule.toConfig())
-				.end()
+    config.module.rule('svg')
+      // Use svg component rule
+      .oneOf('svg_as_component')
+      .resourceQuery(/inline/)
+      .test(/\.(svg)(\?.*)?$/)
+      .use('babel-loader')
+      .loader('babel-loader')
+      .end()
+      .use('vue-svg-loader')
+      .loader('vue-svg-loader')
+      .options({
+        svgo: {
+          plugins: [
+            { prefixIds: true },
+            { cleanupIDs: true },
+            { convertShapeToPath: false },
+            { convertStyleToAttrs: true }
+          ]
+        }
+      })
+      .end()
+      .end()
+      // Otherwise use original svg rule
+      .oneOf('svg_as_regular')
+      .merge(svgRule.toConfig())
+      .end()
 
     // en_US: If prod is on assets require on cdn
     // zh_CN: 如果是 prod 模式，则引入 CDN 依赖文件，有需要减少包大小请自行解除依赖
@@ -124,12 +124,15 @@ const vueConfig = {
   devServer: {
     open: true,
     // development server port 8001
-    port: 8081
+    port: 8082
     // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
     // proxy: {
     //   '/api': {
-    //     target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
+    //     target: 'http://127.0.0.1:8080',
     //     ws: false,
+    //     // pathRewrite: {
+    //     //   '^/api': ''
+    //     // },
     //     changeOrigin: true
     //   }
     // }

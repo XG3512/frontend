@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 
 const userApi = {
+  // Login: '/sys/auth/jwt-token-auth/',
   Login: '/auth/login',
   Logout: '/auth/logout',
   ForgePassword: '/auth/forge-password',
@@ -25,7 +26,6 @@ const userApi = {
  * @returns {*}
  */
 export function login (parameter) {
-  console.log('login url', userApi.Login)
   return request({
     url: userApi.Login,
     method: 'post',

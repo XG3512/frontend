@@ -1,25 +1,34 @@
 import Mock from 'mockjs2'
+// import builder from '../util'
 import { builder, getQueryParameters } from '../util'
 
-const totalCount = 5701
+const totalCount = 5710
 
 const serverList = (options) => {
+  // 前端传回页面编号，每页数量
   const parameters = getQueryParameters(options)
-
+  // 页面的数据
   const result = []
   const pageNo = parseInt(parameters.pageNo)
-  const pageSize = parseInt(parameters.pageSize)
+  // const pageSize = parseInt(parameters.pageSize)
+  // const pageNo = 1
+  const pageSize = 20
+  // 计算页面总数
   const totalPage = Math.ceil(totalCount / pageSize)
   const key = (pageNo - 1) * pageSize
-  const next = (pageNo >= totalPage ? (totalCount % pageSize) : pageSize) + 1
 
-  for (let i = 1; i < next; i++) {
+  const next = (pageNo >= totalPage ? (totalCount % pageSize) : pageSize) + 1
+  console.log('result', result, 'pageNo', pageNo, 'pageSize', pageSize, 'totaPage', totalPage, 'key', key, 'next', next)
+  for (let i = 1; i < 57; i++) {
     const tmpKey = key + i
+    const kkk = 1 + i
     result.push({
-      key: tmpKey,
+      key: i + 1,
       id: tmpKey,
-      no: 'No ' + tmpKey,
+      no: 'No ' + kkk,
       description: '这是一段描述',
+      descriptio: '这是二段描述',
+      descripti: '这是三段描述',
       callNo: Mock.mock('@integer(1, 999)'),
       status: Mock.mock('@integer(0, 3)'),
       updatedAt: Mock.mock('@datetime'),
@@ -28,11 +37,16 @@ const serverList = (options) => {
   }
 
   return builder({
-    pageSize: pageSize,
-    pageNo: pageNo,
-    totalCount: totalCount,
+    pageSize: 40,
+    // 页面数据量
+    pageNo: 2,
+    // 第几页
+    totalCount: 500,
+    // 数据总数
     totalPage: totalPage,
+    // 总页数
     data: result
+    // 该页的数据
   })
 }
 

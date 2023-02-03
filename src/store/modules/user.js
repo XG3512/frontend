@@ -38,12 +38,15 @@ const user = {
     // 登录
     Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
+        console.log('userinfo', userInfo)
         login(userInfo).then(response => {
           const result = response.result
+          console.log('res resut', result)
           storage.set(ACCESS_TOKEN, result.token, new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
           commit('SET_TOKEN', result.token)
           resolve()
         }).catch(error => {
+          console.log('err', error)
           reject(error)
         })
       })
@@ -54,7 +57,9 @@ const user = {
       return new Promise((resolve, reject) => {
         // 请求后端获取用户信息 /api/user/info
         getInfo().then(response => {
+          console.log('responsesss', response)
           const { result } = response
+          console.log('result', result)
           if (result.role && result.role.permissions.length > 0) {
             const role = { ...result.role }
             role.permissions = result.role.permissions.map(permission => {

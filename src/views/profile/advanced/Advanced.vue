@@ -1,32 +1,31 @@
 <template>
-  <page-header-wrapper
-    :title="keyIdNum"
-    :tab-active-key="tabActiveKey"
-    @tabChange="handleTabChange"
-  >
+  <page-header-wrapper :title="keyIdNum" :tab-active-key="tabActiveKey" @tabChange="handleTabChange">
     <template v-slot:content>
       <a-descriptions size="small" :column="isMobile ? 1 : 2">
-        <a-descriptions-item label="创建人">曲丽丽</a-descriptions-item>
-        <a-descriptions-item label="工单地址">XX 服务</a-descriptions-item>
-        <a-descriptions-item label="创建时间">2017-07-07</a-descriptions-item>
+        <a-descriptions-item label="创建人">{{ order.creatName }}</a-descriptions-item>
+        <a-descriptions-item label="工单地址">{{ order.address }}</a-descriptions-item>
+        <a-descriptions-item label="创建时间">{{ order.creatTime }}</a-descriptions-item>
         <!-- <a-descriptions-item label="关联单据">
           <a href="">12421</a>
         </a-descriptions-item> -->
         <!-- <a-descriptions-item label="生效日期">2017-07-07 ~ 2017-08-08</a-descriptions-item> -->
-        <a-descriptions-item label="问题描述">请于两个工作日内确认</a-descriptions-item>
+        <a-descriptions-item label="问题描述">{{ order.description }}</a-descriptions-item>
       </a-descriptions>
     </template>
 
     <!-- actions -->
     <template v-slot:extra>
-      <a-button type="primary">取消工单</a-button>
+      <a-button type="primary" @click="showModal">取消工单</a-button>
+      <a-modal v-model="visibleCancle" title="取消工单" @ok="cancelOrder(keyId)">
+        <p>确定取消该工单？</p>
+      </a-modal>
     </template>
 
     <template v-slot:extraContent>
       <a-row class="status-list">
         <a-col :xs="12" :sm="12">
           <div class="text">状态</div>
-          <div class="heading">待审批</div>
+          <div class="heading">{{ statusMessage }}</div>
         </a-col>
         <!-- <a-col :xs="12" :sm="12">
           <div class="text">订单金额</div>
@@ -36,34 +35,106 @@
     </template>
 
     <a-card :bordered="false" title="流程进度">
-      <a-steps :direction="(isMobile && 'vertical') || 'horizontal'" :current="3" progressDot>
+      <a-steps :direction="(isMobile && 'vertical') || 'horizontal'" :current="order.status" progressDot>
         <a-step>
           <template v-slot:title>
             <span>创建工单</span>
           </template>
           <template v-slot:description>
             <div class="antd-pro-pages-profile-advanced-style-stepDescription">
-              曲丽丽<a-icon type="dingding" style="margin-left: 8px" />
-              <div>2016-12-12 12:32</div>
+              {{ order.creatName }}
+              <div>{{ order.creatTime }}</div>
             </div>
           </template>
         </a-step>
-        <a-step>
+        <!-- <a-step>
           <template v-slot:title>
             <span>派发工单</span>
           </template>
           <template v-slot:description>
             <div class="antd-pro-pages-profile-advanced-style-stepDescription">
-              周毛毛<a-icon type="dingding" style="color: rgb(0, 160, 233); margin-left: 8px" />
-              <div><a>催一下</a></div>
+              <div v-show="true"><a>催一下</a></div>
+              {{ distributeMessage }}
+            </div>
+          </template>
+        </a-step> -->
+        <a-step>
+          <template v-slot:title>
+            <span>工单处理</span>
+          </template>
+          <template v-slot:description>
+            <div class="antd-pro-pages-profile-advanced-style-stepDescription">
+              {{ order.fixName }}
+              <div>{{ order.fixTime }}</div>
             </div>
           </template>
         </a-step>
-        <a-step title="工单处理" />
+        <a-step>
+          <template v-slot:title>
+            <span>服务评价</span>
+          </template>
+          <template v-slot:description v-if="order.achieveScore!==0">
+            <div class="antd-pro-pages-profile-advanced-style-stepDescription">
+              <a-rate :value="order.achieveScore" disabled />
+              <div>{{ order.fixTime }}</div>
+            </div>
+          </template>
+        </a-step>
         <a-step title="完成" />
       </a-steps>
     </a-card>
 
+    <a-card v-if="order.status === 1" style="margin-top: 24px" :bordered="false" title="工单处理">
+      <a-descriptions>
+        <a-descriptions-item label="工程师姓名">{{ order.fixName }}</a-descriptions-item>
+        <a-descriptions-item label="工程师服务ID">{{ order.fixerId }}</a-descriptions-item>
+        <a-descriptions-item label="邮箱">{{ order.fixerEmail }}</a-descriptions-item>
+        <a-descriptions-item label="电话">{{ order.fixerPhone }}</a-descriptions-item>
+        <a-descriptions-item label="QQ">{{ order.fixerQQ }}</a-descriptions-item>
+        <a-descriptions-item label="派单状态">{{ order.fixStatus }}</a-descriptions-item>
+      </a-descriptions>
+    </a-card>
+    <a-card v-if="order.status === 2" style="margin-top: 24px" :bordered="false" title="服务评价">
+      <br />
+      <div>
+        <a-row type="flex" justify="space-around" align="middle">
+          <a-col :span="8">
+            <a-alert v-if="visible" message="评价已提交" type="success" closable :after-close="handleClose" />
+            <br />
+            <a-rate
+              v-model="order.achieveScore"
+              :allow-clear="false"
+              :disabled="starStatu"
+              @change="change(order.achieveScore)"
+              style="justify-content: center; display: flex"
+            >
+              <a-icon slot="character" type="star" theme="filled" style="font-size: 59px" />
+            </a-rate>
+          </a-col>
+        </a-row>
+        <br />
+        <br />
+      </div>
+    </a-card>
+    <a-card v-if="order.status === 3" style="margin-top: 24px" :bordered="false" title="完成信息">
+      <a-descriptions>
+        <a-descriptions-item label="工程师姓名">{{ order.fixName }}</a-descriptions-item>
+        <a-descriptions-item label="工程师服务ID">{{ order.fixerId }}</a-descriptions-item>
+        <a-descriptions-item label="工单状态">已完成</a-descriptions-item>
+        <a-descriptions-item label="结单时间">{{ order.achieveTime }}</a-descriptions-item>
+        <a-descriptions-item label="服务评价">{{ achieveStar[order.achieveScore-1] }}</a-descriptions-item>
+        <a-descriptions-item label="派单状态">{{ order.fixStatus }}</a-descriptions-item>
+      </a-descriptions>
+    </a-card>
+    <!-- <a-card style="margin-top: 24px" :bordered="false" title="用户信息">
+      <a-descriptions>
+        <a-descriptions-item label="用户姓名">付晓晓</a-descriptions-item>
+        <a-descriptions-item label="会员卡号">32943898021309809423</a-descriptions-item>
+        <a-descriptions-item label="身份证">3321944288191034921</a-descriptions-item>
+        <a-descriptions-item label="联系方式">18112345678</a-descriptions-item>
+        <a-descriptions-item label="联系地址">浙江省杭州市西湖区黄姑山路工专路交叉路口</a-descriptions-item>
+      </a-descriptions>
+    </a-card>
     <a-card style="margin-top: 24px" :bordered="false" title="用户信息">
       <a-descriptions>
         <a-descriptions-item label="用户姓名">付晓晓</a-descriptions-item>
@@ -72,44 +143,9 @@
         <a-descriptions-item label="联系方式">18112345678</a-descriptions-item>
         <a-descriptions-item label="联系地址">浙江省杭州市西湖区黄姑山路工专路交叉路口</a-descriptions-item>
       </a-descriptions>
-      <!-- <a-descriptions title="信息组">
-        <a-descriptions-item label="某某数据">725</a-descriptions-item>
-        <a-descriptions-item label="该数据更新时间">2018-08-08</a-descriptions-item>
-        <a-descriptions-item></a-descriptions-item>
-        <a-descriptions-item label="某某数据">725</a-descriptions-item>
-        <a-descriptions-item label="该数据更新时间">2018-08-08</a-descriptions-item>
-        <a-descriptions-item></a-descriptions-item>
-      </a-descriptions> -->
-      <!-- <a-card type="inner" title="多层信息组">
-        <a-descriptions title="组名称" size="small">
-          <a-descriptions-item label="负责人">林东东</a-descriptions-item>
-          <a-descriptions-item label="角色码">1234567</a-descriptions-item>
-          <a-descriptions-item label="所属部门">XX公司-YY部</a-descriptions-item>
-          <a-descriptions-item label="过期时间">2018-08-08</a-descriptions-item>
-          <a-descriptions-item label="描述">这段描述很长很长很长很长很长很长很长很长很长很长很长很长很长很长...</a-descriptions-item
-          >
-        </a-descriptions>
-        <a-divider style="margin: 16px 0" />
-        <a-descriptions title="组名称" size="small" :col="1">
-          <a-descriptions-item label="学名">
-            Citrullus lanatus (Thunb.) Matsum. et
-            Nakai一年生蔓生藤本；茎、枝粗壮，具明显的棱。卷须较粗..</a-descriptions-item
-          >
-        </a-descriptions>
-        <a-divider style="margin: 16px 0" />
-        <a-descriptions title="组名称" size="small" :col="2">
-          <a-descriptions-item label="负责人">付小小</a-descriptions-item>
-          <a-descriptions-item label="角色码">1234567</a-descriptions-item>
-        </a-descriptions>
-      </a-card> -->
-    </a-card>
-
-    <!-- <a-card style="margin-top: 24px" :bordered="false" title="用户近半年来电记录">
-      <div class="no-data"><a-icon type="frown-o" />暂无数据</div>
     </a-card> -->
-
     <!-- 操作 -->
-    <a-card
+    <!-- <a-card
       style="margin-top: 24px"
       :bordered="false"
       :tabList="operationTabList"
@@ -150,7 +186,7 @@
           <a-badge :status="status | statusTypeFilter" :text="status | statusFilter" />
         </template>
       </a-table>
-    </a-card>
+    </a-card> -->
   </page-header-wrapper>
 </template>
 
@@ -163,141 +199,31 @@ export default {
   data() {
     return {
       keyId: '',
-      tabList: [
-        { key: 'detail', tab: '详情' }
-      ],
+      // tabList: [{ key: 'detail', tab: '详情' }],
       tabActiveKey: 'detail',
-
-      operationTabList: [
-        {
-          key: '1',
-          tab: '操作日志一'
-        },
-        {
-          key: '2',
-          tab: '操作日志二'
-        },
-        {
-          key: '3',
-          tab: '操作日志三'
-        }
-      ],
+      distributeMessage: '2023-01-11',
+      distributeTime: '2023-01-11',
       operationActiveTabKey: '1',
-
-      operationColumns: [
-        {
-          title: '操作类型',
-          dataIndex: 'type',
-          key: 'type'
-        },
-        {
-          title: '操作人',
-          dataIndex: 'name',
-          key: 'name'
-        },
-        {
-          title: '执行结果',
-          dataIndex: 'status',
-          key: 'status',
-          scopedSlots: { customRender: 'status' }
-        },
-        {
-          title: '操作时间',
-          dataIndex: 'updatedAt',
-          key: 'updatedAt'
-        },
-        {
-          title: '备注',
-          dataIndex: 'remark',
-          key: 'remark'
-        }
-      ],
-      operation1: [
-        {
-          key: 'op1',
-          type: '订购关系生效',
-          name: '曲丽丽',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '-'
-        },
-        {
-          key: 'op2',
-          type: '财务复审',
-          name: '付小小',
-          status: 'reject',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '不通过原因'
-        },
-        {
-          key: 'op3',
-          type: '部门初审',
-          name: '周毛毛',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '-'
-        },
-        {
-          key: 'op4',
-          type: '提交订单',
-          name: '林东东',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '很棒'
-        },
-        {
-          key: 'op5',
-          type: '创建订单',
-          name: '汗牙牙',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '-'
-        }
-      ],
-      operation2: [
-        {
-          key: 'op2',
-          type: '财务复审',
-          name: '付小小',
-          status: 'reject',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '不通过原因'
-        },
-        {
-          key: 'op3',
-          type: '部门初审',
-          name: '周毛毛',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '-'
-        },
-        {
-          key: 'op4',
-          type: '提交订单',
-          name: '林东东',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '很棒'
-        }
-      ],
-      operation3: [
-        {
-          key: 'op2',
-          type: '财务复审',
-          name: '付小小',
-          status: 'reject',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '不通过原因'
-        },
-        {
-          key: 'op3',
-          type: '部门初审',
-          name: '周毛毛',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '-'
-        }
-      ]
+      order: {
+        status: 2,
+        address: 'A 楼 A101办公室',
+        description: '电脑黑屏',
+        creatName: 'Alex',
+        creatTime: '2023-01-12 12:32',
+        fixName: 'xcc',
+        fixerId: '20001032',
+        fixTime: '2023-01-12 12:32',
+        fixerEmail: 'xg3512@gmail.com',
+        fixerPhone: '13020535093',
+        fixerQQ: '2412650616',
+        fixStatus: '工程师已确认', // 是否接单确认
+        achieveTime: '2023-01-12 14:32',
+        achieveScore: 0
+      },
+      starStatu: false,
+      visible: false,
+      visibleCancle: false,
+      achieveStar: ['一般', '好', '很好', '非常好', '极好']
     }
   },
   filters: {
@@ -320,11 +246,37 @@ export default {
     handleTabChange(key) {
       console.log('')
       this.tabActiveKey = key
+    },
+    change(value) {
+      this.starStatu = true
+      this.visible = true
+      this.sendValue(value)
+      this.order.status += 1
+    },
+    handleClose() {
+      this.visible = false
+    },
+    sendValue(value) {
+      console.log(value)
+    },
+    cancelOrder(id) {
+      console.log(id)
+      this.visibleCancle = false
+    },
+    showModal() {
+      this.visibleCancle = true
     }
   },
   computed: {
     keyIdNum() {
       return '工单详情：' + this.keyId
+    },
+    statusMessage() {
+      if (this.order.status === 0) return '创建工单'
+      else if (this.order.status === 1) return '工单处理'
+      else if (this.order.status === 2) return '服务评价'
+      else if (this.order.status === 3) return '服务完成'
+      else return 'Err'
     }
   },
   mounted() {

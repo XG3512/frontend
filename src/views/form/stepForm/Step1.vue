@@ -68,7 +68,7 @@
 </template>
 
 <script>
-const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+const OPTIONS = ['01-12 13:00', '01-12 14:00', '01-13 10:30', '02-14 8:30']
 export default {
   name: 'Step1',
   data() {

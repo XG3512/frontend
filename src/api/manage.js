@@ -26,14 +26,20 @@ export function getRoleList (parameter) {
     params: parameter
   })
 }
-
-export function getServiceList (parameter) {
+export function getServiceList () {
   return request({
     url: api.service,
-    method: 'get',
-    params: parameter
+    method: 'get'
+    // params: parameter
   })
 }
+// export function getServiceList (parameter) {
+//   return request({
+//     url: api.service,
+//     method: 'get',
+//     params: parameter
+//   })
+// }
 
 export function getPermissions (parameter) {
   return request({

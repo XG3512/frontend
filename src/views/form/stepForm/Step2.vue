@@ -66,9 +66,6 @@ export default {
     this.$store.state.formStepFormImage = this.keyId
     // console.log(this.codeUrl)
   },
-  // computed () {
-  //   this.codeUrl = 'http://124.221.110.184/up.php?keyId=' + this.keyId
-  // },
   methods: {
     nextStep() {
       const that = this
