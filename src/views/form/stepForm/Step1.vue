@@ -52,8 +52,8 @@
         <a-button type="primary" @click="nextStep">下一步</a-button>
       </a-form-item>
     </a-form>
-    <a-divider />
-    <div class="step-form-style-desc">
+    <!-- <a-divider /> -->
+    <!-- <div class="step-form-style-desc">
       <h3>说明</h3>
       <h4>请尽量详细描述问题</h4>
       <p>
@@ -63,7 +63,7 @@
       <p>
         如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。如果需要，这里可以放一些关于产品的常见问题说明。
       </p>
-    </div>
+    </div> -->
   </div>
 </template>
 

@@ -1,8 +1,26 @@
 import Mock from 'mockjs2'
 // import builder from '../util'
 import { builder, getQueryParameters } from '../util'
-
+var Random = Mock.Random
 const totalCount = 5710
+Random.extend({
+  constellation: function (date) {
+    var constellations = [
+      '后勤/维修工程专班',
+      '二级学院/数据科学学院',
+      '校办/保密科'
+    ]
+    return this.pick(constellations)
+  },
+  role: function (date) {
+    var constellations = [
+      '管理员',
+      '报修用户',
+      '维修工程师'
+    ]
+    return this.pick(constellations)
+  }
+})
 
 const serverList = (options) => {
   // 前端传回页面编号，每页数量
@@ -21,22 +39,27 @@ const serverList = (options) => {
   console.log('result', result, 'pageNo', pageNo, 'pageSize', pageSize, 'totaPage', totalPage, 'key', key, 'next', next)
   for (let i = 1; i < 57; i++) {
     const tmpKey = key + i
-    const kkk = 1 + i
+    const kkk = i
     result.push({
-      key: i + 1,
-      id: tmpKey,
-      no: 'No ' + kkk,
-      description: '这是一段描述',
-      descriptio: '这是二段描述',
-      descripti: '这是三段描述',
-      callNo: Mock.mock('@integer(1, 999)'),
-      status: Mock.mock('@integer(0, 3)'),
+      key: i,
+      id: kkk + tmpKey,
+      userRole: Mock.mock('@role'),
+      userName: Mock.mock('@cname'),
+      userPhone: Mock.mock('@integer(11111111111, 99999999999)'),
+      userDepartment: Mock.mock('@CONSTELLATION'),
+      userNo: Mock.mock('@integer(20030177, 202299999)'),
+      userOrderNum: Mock.mock('@integer(0, 10)'),
       updatedAt: Mock.mock('@datetime'),
       editable: false
     })
   }
 
   return builder({
+    departments: [
+      '后勤/维修专班',
+      '二级学院/数据科学学院',
+      '校办/保密科'
+    ],
     pageSize: 40,
     // 页面数据量
     pageNo: 2,
