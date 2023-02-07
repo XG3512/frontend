@@ -73,7 +73,7 @@
           <template v-slot:title>
             <span>服务评价</span>
           </template>
-          <template v-slot:description v-if="order.achieveScore!==0">
+          <template v-slot:description v-if="order.achieveScore !== 0">
             <div class="antd-pro-pages-profile-advanced-style-stepDescription">
               <a-rate :value="order.achieveScore" disabled />
               <div>{{ order.fixTime }}</div>
@@ -122,76 +122,16 @@
         <a-descriptions-item label="工程师服务ID">{{ order.fixerId }}</a-descriptions-item>
         <a-descriptions-item label="工单状态">已完成</a-descriptions-item>
         <a-descriptions-item label="结单时间">{{ order.achieveTime }}</a-descriptions-item>
-        <a-descriptions-item label="服务评价">{{ achieveStar[order.achieveScore-1] }}</a-descriptions-item>
+        <a-descriptions-item label="服务评价">{{ achieveStar[order.achieveScore - 1] }}</a-descriptions-item>
         <a-descriptions-item label="派单状态">{{ order.fixStatus }}</a-descriptions-item>
       </a-descriptions>
     </a-card>
-    <!-- <a-card style="margin-top: 24px" :bordered="false" title="用户信息">
-      <a-descriptions>
-        <a-descriptions-item label="用户姓名">付晓晓</a-descriptions-item>
-        <a-descriptions-item label="会员卡号">32943898021309809423</a-descriptions-item>
-        <a-descriptions-item label="身份证">3321944288191034921</a-descriptions-item>
-        <a-descriptions-item label="联系方式">18112345678</a-descriptions-item>
-        <a-descriptions-item label="联系地址">浙江省杭州市西湖区黄姑山路工专路交叉路口</a-descriptions-item>
-      </a-descriptions>
-    </a-card>
-    <a-card style="margin-top: 24px" :bordered="false" title="用户信息">
-      <a-descriptions>
-        <a-descriptions-item label="用户姓名">付晓晓</a-descriptions-item>
-        <a-descriptions-item label="会员卡号">32943898021309809423</a-descriptions-item>
-        <a-descriptions-item label="身份证">3321944288191034921</a-descriptions-item>
-        <a-descriptions-item label="联系方式">18112345678</a-descriptions-item>
-        <a-descriptions-item label="联系地址">浙江省杭州市西湖区黄姑山路工专路交叉路口</a-descriptions-item>
-      </a-descriptions>
-    </a-card> -->
-    <!-- 操作 -->
-    <!-- <a-card
-      style="margin-top: 24px"
-      :bordered="false"
-      :tabList="operationTabList"
-      :activeTabKey="operationActiveTabKey"
-      @tabChange="
-        (key) => {
-          this.operationActiveTabKey = key
-        }
-      "
-    >
-      <a-table
-        v-if="operationActiveTabKey === '1'"
-        :columns="operationColumns"
-        :dataSource="operation1"
-        :pagination="false"
-      >
-        <template slot="status" slot-scope="status">
-          <a-badge :status="status | statusTypeFilter" :text="status | statusFilter" />
-        </template>
-      </a-table>
-      <a-table
-        v-if="operationActiveTabKey === '2'"
-        :columns="operationColumns"
-        :dataSource="operation2"
-        :pagination="false"
-      >
-        <template slot="status" slot-scope="status">
-          <a-badge :status="status | statusTypeFilter" :text="status | statusFilter" />
-        </template>
-      </a-table>
-      <a-table
-        v-if="operationActiveTabKey === '3'"
-        :columns="operationColumns"
-        :dataSource="operation3"
-        :pagination="false"
-      >
-        <template slot="status" slot-scope="status">
-          <a-badge :status="status | statusTypeFilter" :text="status | statusFilter" />
-        </template>
-      </a-table>
-    </a-card> -->
   </page-header-wrapper>
 </template>
 
 <script>
 import { baseMixin } from '@/store/app-mixin'
+import { getOrderDeatl } from '@/api/manage'
 
 export default {
   name: 'Advanced',
@@ -200,31 +140,40 @@ export default {
     return {
       keyId: '',
       // tabList: [{ key: 'detail', tab: '详情' }],
+      postData: {},
       tabActiveKey: 'detail',
       distributeMessage: '2023-01-11',
       distributeTime: '2023-01-11',
       operationActiveTabKey: '1',
-      order: {
-        status: 2,
-        address: 'A 楼 A101办公室',
-        description: '电脑黑屏',
-        creatName: 'Alex',
-        creatTime: '2023-01-12 12:32',
-        fixName: 'xcc',
-        fixerId: '20001032',
-        fixTime: '2023-01-12 12:32',
-        fixerEmail: 'xg3512@gmail.com',
-        fixerPhone: '13020535093',
-        fixerQQ: '2412650616',
-        fixStatus: '工程师已确认', // 是否接单确认
-        achieveTime: '2023-01-12 14:32',
-        achieveScore: 0
-      },
+      // order: {
+      //   status: 2,
+      //   address: 'A 楼 A101办公室',
+      //   description: '电脑黑屏',
+      //   creatName: 'Alex',
+      //   creatTime: '2023-01-12 12:32',
+      //   fixName: 'xcc',
+      //   fixerId: '20001032',
+      //   fixTime: '2023-01-12 12:32',
+      //   fixerEmail: 'xg3512@gmail.com',
+      //   fixerPhone: '13020535093',
+      //   fixerQQ: '2412650616',
+      //   fixStatus: '工程师已确认', // 是否接单确认
+      //   achieveTime: '2023-01-12 14:32',
+      //   achieveScore: 0
+      // },
+      order: {},
       starStatu: false,
       visible: false,
       visibleCancle: false,
       achieveStar: ['一般', '好', '很好', '非常好', '极好']
+      // orderId: this.$route.params.id
     }
+  },
+  created() {
+    this.keyId = this.$route.params.keyId
+    this.postData.orderId = this.$route.params.keyId
+    console.log('creat')
+    this.getData(this.postData)
   },
   filters: {
     statusFilter(status) {
@@ -265,6 +214,14 @@ export default {
     },
     showModal() {
       this.visibleCancle = true
+    },
+    getData(postData) {
+      console.log('postData', postData)
+      getOrderDeatl(postData).then((res) => {
+        // console.log('postData', postData)
+        console.log('res', res.result.data)
+        this.order = res.result.data
+      })
     }
   },
   computed: {
@@ -278,9 +235,6 @@ export default {
       else if (this.order.status === 3) return '服务完成'
       else return 'Err'
     }
-  },
-  mounted() {
-    this.keyId = this.$route.params.keyId
   }
 }
 </script>

@@ -54,13 +54,29 @@
                   </a-input>
                 </a-form-item>
               </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="用户工号">
+                  <a-input ref="userNoInput" v-model="queryParam.userNo" placeholder="工号" @pressEnter="queryData">
+                    <a-icon slot="prefix" type="idcard" />
+                    <a-tooltip slot="suffix" title="输入查询的手机号">
+                      <a-icon type="info-circle" style="color: rgba(0, 0, 0, 0.45)" />
+                    </a-tooltip>
+                  </a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24"> </a-col>
             </template>
             <a-col :md="(!advanced && 8) || 24" :sm="24">
               <span
                 class="table-page-search-submitButtons"
                 :style="(advanced && { float: 'right', overflow: 'hidden' }) || {}"
               >
-                <!-- <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button> -->
+                <a-space size="10" v-if="advanced">
+                  <a-button type="primary">导出所查</a-button>
+                  <div style="width: 10px"></div>
+                  <a-button type="primary">导出全部</a-button>
+                  <div style="width: 10px"></div>
+                </a-space>
                 <a-button type="primary" @click="queryData">查询</a-button>
                 <a-button style="margin-left: 8px" @click="() => (this.queryParam = {})">重置</a-button>
                 <a @click="toggleAdvanced" style="margin-left: 8px">
@@ -82,7 +98,6 @@
               >批量删除</a-button
             >
           </a-col>
-          <!-- <a-col :span="12"> </a-col> -->
           <a-col :span="4" style="min-width: 300px">
             <!-- 批量导入用户 -->
             <a-button type="link">点击下载导入示例</a-button>
@@ -115,43 +130,10 @@
                 <a-descriptions-item label="电话"> {{ colData[item - 1]['userPhone'] }} </a-descriptions-item>
                 <a-descriptions-item label="部门"> {{ colData[item - 1]['userDepartment'] }} </a-descriptions-item>
               </a-descriptions>
-              <!-- <a-tag color="#f50"> {{ colData[item - 1]['userName'] }} </a-tag>
-              <a-tag color="#f50"> {{ colData[item - 1]['userDepartment'] }} </a-tag>
-              <a-tag color="#f50"> {{ colData[item - 1]['userNo'] }} </a-tag>
-              <a-tag color="#f50"> {{ colData[item - 1]['userPhone'] }} </a-tag> -->
             </div>
           </a-modal>
         </a-row>
       </div>
-
-      <!-- <s-table
-        ref="table"
-        size="default"
-        rowKey="key"
-        :columns="columns"
-        :data="loadData"
-        :alert="true"
-        :rowSelection="rowSelection"
-
-      >
-        <span slot="serial" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </span>
-        <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
-        </span>
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
-        </span>
-
-        <span slot="action" slot-scope="text, record">
-          <template>
-            <a @click="handleEdit(record)">更改信息</a>
-            <a-divider type="vertical" />
-            <a @click="handleSub(record)">删除账号</a>
-          </template>
-        </span>
-      </s-table> -->
       <a-table
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         :columns="columns"
@@ -501,24 +483,24 @@ export default {
       console.log('userinof', userInfo)
       this.$message.info('新增成功')
       this.getData()
-//       {
-//     "userRole": "2",
-//     "userName": "444444444",
-//     "userPhone": "444444444444",
-//     "userNo": "444444444444",
-//     "id": 0
-//        }
+      //       {
+      //     "userRole": "2",
+      //     "userName": "444444444",
+      //     "userPhone": "444444444444",
+      //     "userNo": "444444444444",
+      //     "id": 0
+      //        }
     },
     // 批量删除
     delUsers() {
       console.log(this.selectedRows)
       this.$message.info('批量删除成功')
       this.getData()
-//       [ userNo
-//     97068983,
-//     200465041,
-//     201382889
-// ]
+      //       [ userNo
+      //     97068983,
+      //     200465041,
+      //     201382889
+      // ]
     },
     // 单用户删除
     delUser(user) {
@@ -530,12 +512,12 @@ export default {
     editUser(user) {
       console.log('change', user)
       this.getData()
-//       {id为useNo
-//     "userRole": "报修用户",
-//     "userName": "潘超",
-//     "userPhone": "4060547156399999",
-//     "id": 73323107
-// }
+      //       {id为useNo
+      //     "userRole": "报修用户",
+      //     "userName": "潘超",
+      //     "userPhone": "4060547156399999",
+      //     "id": 73323107
+      // }
     }
   }
 }

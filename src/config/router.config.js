@@ -44,6 +44,7 @@ export const asyncRouterMap = [
       {
         path: '/profile/advanced',
         name: 'ProfileAdvanced',
+        hidden: true,
         component: () => import('@/views/profile/advanced/Advanced'),
         meta: { title: 'menu.profile.advanced', icon: 'profile', permission: ['profile'] }
 

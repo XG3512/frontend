@@ -6,7 +6,9 @@ const api = {
   service: '/service',
   permission: '/permission',
   permissionNoPager: '/permission/no-pager',
-  orgTree: '/org/tree'
+  orgTree: '/org/tree',
+  orderList: 'sys/orderList',
+  orderDetal: 'sys/orderDetal'
 }
 
 export default api
@@ -33,13 +35,21 @@ export function getServiceList () {
     // params: parameter
   })
 }
-// export function getServiceList (parameter) {
-//   return request({
-//     url: api.service,
-//     method: 'get',
-//     params: parameter
-//   })
-// }
+export function orderList () {
+  return request({
+    url: api.orderList,
+    method: 'get'
+    // params: parameter
+  })
+}
+export function getOrderDeatl (parameter) {
+  console.log('parmet request', parameter)
+  return request({
+    url: api.orderDetal,
+    method: 'post',
+    data: parameter
+  })
+}
 
 export function getPermissions (parameter) {
   return request({

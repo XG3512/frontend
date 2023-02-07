@@ -1,6 +1,6 @@
 import Mock from 'mockjs2'
 // import builder from '../util'
-import { builder, getQueryParameters } from '../util'
+import { builder, getBody, getQueryParameters } from '../util'
 var Random = Mock.Random
 const totalCount = 5710
 Random.extend({
@@ -17,6 +17,14 @@ Random.extend({
       '管理员',
       '报修用户',
       '维修工程师'
+    ]
+    return this.pick(constellations)
+  },
+  status: function (date) {
+    var constellations = [
+      '工单发起',
+      '已接单',
+      '已结单'
     ]
     return this.pick(constellations)
   }
@@ -282,8 +290,100 @@ const radar = () => {
   ])
 }
 
+const orderList = (options) => {
+  const result = []
+  for (let i = 1; i < 57; i++) {
+    result.push({
+      key: i,
+      orderInitiate: Mock.mock('@cname'),
+      orderDeal: Mock.mock('@cname'),
+      orderDealPhone: Mock.mock('@integer(11111111111, 99999999999)'),
+      orderState: Mock.mock('@status'),
+      orderDealNo: Mock.mock('@integer(20030177, 202299999)'),
+      orderDuration: Mock.mock('@integer(0, 10)'),
+      orderId: Mock.mock('@uuid'),
+      editable: false
+    })
+  }
+
+  return builder({
+    // departments: [
+    //   '后勤/维修专班',
+    //   '二级学院/数据科学学院',
+    //   '校办/保密科'
+    // ],
+    // pageSize: 40,
+    // // 页面数据量
+    // pageNo: 2,
+    // // 第几页
+    // totalCount: 500,
+    // // 数据总数
+    // totalPage: totalPage,
+    // 总页数
+    data: result
+    // 该页的数据
+  })
+}
+const orderDetal = (options) => {
+  // const result = []
+  // for (let i = 1; i < 57; i++) {
+  //   result.push({
+  //     key: i,
+  //     orderInitiate: Mock.mock('@cname'),
+  //     orderDeal: Mock.mock('@cname'),
+  //     orderDealPhone: Mock.mock('@integer(11111111111, 99999999999)'),
+  //     orderState: Mock.mock('@status'),
+  //     orderDealNo: Mock.mock('@integer(20030177, 202299999)'),
+  //     orderDuration: Mock.mock('@integer(0, 10)'),
+  //     orderId: Mock.mock('@uuid'),
+  //     editable: false
+  //   })
+  // }
+  // const result = {}
+  // const parameters = getQueryParameters(options)
+  // 页面的数据
+  // const result = []
+  // const orderId = parameters.orderId
+
+  console.log('par', options)
+  const order = {
+    status: Mock.mock('@integer(0, 4)'),
+    address: 'A 楼 A101办公室',
+    description: getBody(options).orderId,
+    creatName: Mock.mock('@cname'),
+    creatTime: Mock.mock('@datetime'),
+    fixName: Mock.mock('@cname'),
+    fixerId: Mock.mock('@integer(20030177, 202299999)'),
+    fixTime: Mock.mock('@datetime'),
+    fixerEmail: Mock.mock('@email'),
+    fixerPhone: Mock.mock('@phone'),
+    fixerQQ: '2412650616',
+    fixStatus: '工程师已确认', // 是否接单确认
+    achieveTime: Mock.mock('@datetime'),
+    achieveScore: Mock.mock('@integer(1, 5)')
+  }
+  return builder({
+    // departments: [
+    //   '后勤/维修专班',
+    //   '二级学院/数据科学学院',
+    //   '校办/保密科'
+    // ],
+    // pageSize: 40,
+    // // 页面数据量
+    // pageNo: 2,
+    // // 第几页
+    // totalCount: 500,
+    // // 数据总数
+    // totalPage: totalPage,
+    // 总页数
+    data: order
+    // 该页的数据
+  })
+}
 Mock.mock(/\/service/, 'get', serverList)
 Mock.mock(/\/list\/search\/projects/, 'get', projects)
 Mock.mock(/\/workplace\/activity/, 'get', activity)
 Mock.mock(/\/workplace\/teams/, 'get', teams)
 Mock.mock(/\/workplace\/radar/, 'get', radar)
+Mock.mock(/\/sys\/orderList/, 'get', orderList)
+Mock.mock(/\/sys\/orderDetal/, 'post', orderDetal)
